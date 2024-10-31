@@ -13,14 +13,14 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='teovu',
-    maintainer_email='teovu@todo.todo',
+    maintainer='federico',
+    maintainer_email='federico@todo.todo',
     description='TODO: Package description',
     license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'bump_and_go = lab02.bump_and_go:main'
+            'bump_e_go_controller = lab02.bump_e_go_controller:main'
         ],
     },
 )

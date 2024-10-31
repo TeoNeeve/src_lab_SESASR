@@ -4,7 +4,7 @@
   <name>lab02</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
-  <maintainer email="teovu@todo.todo">teovu</maintainer>
+  <maintainer email="federico@todo.todo">federico</maintainer>
   <license>TODO: License declaration</license>
 
   <test_depend>ament_copyright</test_depend>
