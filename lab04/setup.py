@@ -20,7 +20,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'ekf_node = lab04.ekf_node:main'
+            'ekf_node = lab04.ekf_node:main',
+            'lab04_node_task2 = lab04.lab04_node_task2:main',
+            'ekf_node_task2 = lab04.ekf_node_task2:main'
         ],
     },
 )
