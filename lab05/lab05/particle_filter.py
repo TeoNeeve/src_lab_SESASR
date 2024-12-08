@@ -32,6 +32,7 @@ class PFNode(Node):
         self.landmarks = self.load_landmarks(yaml_file_path)
         self.odom_sub = self.create_subscription(Odometry, '/odom', self.odom_callback, 10)
         self.cmd_vel_sub = self.create_subscription(Twist, '/cmd_vel', self.cmd_vel_callback, 10)
+        self.ground_truth_sub = self.create_subscription(Odometry, '/ground_truth', self.ground_truth_callback, 10)
         self.pf_publisher = self.create_publisher(Odometry, '/pf', 10)
         self.latest_vel = np.array([self.v,self.w])
         self.pf_timer = self.create_timer(1.0 / 20 , self.prediction_step)
@@ -54,6 +55,9 @@ class PFNode(Node):
             self.w = msg.angular.z
 
         self.latest_vel = np.array([self.v,self.w])
+    
+    def ground_truth_callback(self, msg):
+        true_position = msg.pose.pose.position
     
 
     def load_landmarks(self, yaml_file_path):
