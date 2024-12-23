@@ -17,14 +17,15 @@ class PurePursuite(Node):
         self.Lt = 0.5  # Distanza di lookahead
         self.l = 2.0  # Parametro adattivo per la distanza di lookahead
         self.max_accel = 2.84  # Accelerazione massima per TurtleBot3
-        self.max_speed = 0.22  # Velocità lineare massima per TurtleBot3
-        self.robot_pose = np.array([0.0, 0.0, 0.0])  # [x, y, yaw]
+        self.target_vel = 0.22  # Velocità lineare massima per TurtleBot3
+        init_pose = np.array([0.0, 0.0, 0.0])  # [x, y, yaw]
         self.path = []  # Percorso globale
         self.pind = 0  # Indice del percorso
-        self.current_speed = 0.0  # Velocità lineare corrente
+        #self.current_speed = 0.0  # Velocità lineare corrente
 
-        self.robot = DifferentialDriveRobot(init_pose=self.robot_pose)
-
+        self.robot = DifferentialDriveRobot(init_pose)
+        self.robot.x = init_pose
+        self.robot.u = np.array([[0.0], [0.0]])
         # Creazione del controller Pure Pursuit
         self.controller = None
 
@@ -50,13 +51,13 @@ class PurePursuite(Node):
 
     def odom_callback(self, msg):
         """Aggiorna la posa del robot dai dati di odometria."""
-        position = msg.pose.pose.position
-        orientation = msg.pose.pose.orientation
-        _, _, yaw = euler_from_quaternion([
-            orientation.x, orientation.y, orientation.z, orientation.w
-        ])
-        self.robot_pose = np.array([position.x, position.y, yaw])
-        self.current_speed = msg.twist.twist.linear.x  # Velocità lineare corrente
+        # position = msg.pose.pose.position
+        # orientation = msg.pose.pose.orientation
+        # _, _, yaw = euler_from_quaternion([
+        #     orientation.x, orientation.y, orientation.z, orientation.w
+        # ])
+        # self.robot_pose = np.array([position.x, position.y, yaw])
+        #self.current_speed = msg.twist.twist.linear.x  # Velocità lineare corrente
 
     def path_callback(self, msg):
         """Aggiorna il percorso globale e lo interpola."""
@@ -76,7 +77,7 @@ class PurePursuite(Node):
                 path=self.path,
                 pind=self.pind,
                 Lt=self.Lt,
-                vt=self.max_speed
+                vt=self.target_vel
             )
 
     def control_loop(self):
@@ -88,7 +89,8 @@ class PurePursuite(Node):
         self.time += 1 / 15.0  # Aggiorna il tempo a 15 Hz
 
         # Update adaptive lookahead distance
-        self.Lt = max(0.2, min(self.current_speed * self.l, 2.0))  # Clamp lookahead distance between 0.2 and 2.0
+        #self.Lt = max(0.5, self.robot.v * self.l) 
+        self.Lt = self.robot.v * self.l
         self.controller.Lt = self.Lt  # Update lookahead distance in controller
         self.get_logger().info(f"Lookahead Distance (Lt): {self.Lt}")
 
@@ -101,36 +103,36 @@ class PurePursuite(Node):
             cmd.angular.z = 0.0
             self.cmd_vel_pub.publish(cmd)
             return
-        else:
-            self.get_logger().info(f"Lookahead Point: {goal_point}")
+        #else:
+            #self.get_logger().info(f"Lookahead Point: {goal_point}")
 
         # Calcolare la velocità lineare e angolare
-        linear_velocity = proportional_control(self.controller.target_velocity(), self.current_speed, kp=0.5)
+        aceleration = proportional_control(self.controller.target_velocity(), self.robot.v, kp=0.5)
         angular_velocity = self.controller.angular_velocity()
         angular_velocity = max(-1.5, min(angular_velocity, 1.5))
 
 
         # Calcolare l'input del robot
-        u = [linear_velocity, angular_velocity]
+        u = [aceleration, angular_velocity]
 
         # Aggiorna lo stato del robot
         dt = 1 / 15.0  # Passo temporale basato sulla frequenza del loop di controllo (15 Hz)
         self.robot.update_state(u, dt)
 
         # Memorizza lo stato corrente
-        self.states.append(self.time, self.controller.pind, self.robot, linear_velocity)
+        u = [aceleration, angular_velocity]
+        self.states.append(self.time, self.controller.pind, self.robot, aceleration)
 
-        self.get_logger().info(f"Robot Pose: {self.robot.pose}")
+        #self.get_logger().info(f"Robot Pose: {self.robot.pose}")
 
         # Crea il messaggio Twist da pubblicare
         cmd = Twist()
-        cmd.linear.x = linear_velocity
+        cmd.linear.x = self.robot.v
         cmd.angular.z = angular_velocity
         self.cmd_vel_pub.publish(cmd)
 
-        self.get_logger().info(f"Current Speed: {self.current_speed}")
-        self.get_logger().info(f"Linear Velocity: {linear_velocity}, Angular Velocity: {angular_velocity}")
-        self.get_logger().info(f"State recorded at time: {self.time}")
+        self.get_logger().info(f"Linear Velocity: {self.robot.v}, Angular Velocity: {angular_velocity}")
+        #self.get_logger().info(f"State recorded at time: {self.time}")
 
 
 def main():
