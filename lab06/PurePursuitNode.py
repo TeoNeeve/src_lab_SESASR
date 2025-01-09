@@ -16,24 +16,28 @@ class PurePursuite(Node):
         # Parametri del nodo
         self.Lt = 0.5  # Distanza di lookahead iniziale ma poi viene subito cambiata in quello adattivo
 
-        self.kp = 0.5 #per il proportional control l'ho abbassato così ha una reazione piu lenta e riesce a ruotarsi meglio all'inizio
+        #self.kp = 0.5 #per il proportional control l'ho abbassato così ha una reazione piu lenta e riesce a ruotarsi meglio all'inizio
         #in sostanza su kp ho visto che cambia la velocita all' inizio e alla finie cioè auentandolo acelera di più la vel lineare all inizio 
         # e allo stesso modo la decelera alla fine credo. quindi dato che in alcuni casi delle simulazioni appena parte deve ruotarsi di 180 gradi
         #lho messo basso se invece deve partire dritto si puo aumentare forse (da provare meglio perche non ricordo besissimo l'ultima simulazione)
-        #self.kp = 0.2 troppo basso
+        #self.kp = 0.2 #troppo basso
         #self.kp = 3
         #self.kp = 0.2
+        #prova(-6 9) :
+        self.kp = 1.5
 
         #self.l = 2  # Parametro adattivo per la distanza di lookahead
         #self.l = 3
         #self.l = 5
-        self.l = 4.4 #aumentandola sembra andare meglio ma non riesce a fare curve strette, piu smoot ma meno preciso 
+        self.l = 3.8 #prova(-6 9)
+        #self.l = 4.4 #aumentandola sembra andare meglio ma non riesce a fare curve strette, piu smoot ma meno preciso 
         #praticamente se lo il percoso è più smoothed non so bene come dire ma non riesce bene a fare le curve strette 
         # perche se ricordo bene o le taglia o le prende troppo larghe. se invece lo abbasso fa bene le curev strette 
         # pero non è molto preciso peche magari ruota un po di piu o u po di meno e qindi poi non riesce a riprendere il percoso retttilineo e va a sbattere
 
         self.max_accel = 2.84  # Accelerazione massima per TurtleBot3
         self.target_vel = 0.22  # Velocità lineare massima per TurtleBot3
+        #self.target_vel = 0.15  # Velocità lineare massima per TurtleBot3 prva(-6 9)
         init_pose = np.array([0.0, 0.0, 0.0])  # [x, y, yaw]
         self.path = []  # Percorso globale
         self.pind = 0  # Indice del percorso

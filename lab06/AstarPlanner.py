@@ -45,8 +45,11 @@ class AStarPlanner(Node):
 
         #self.goal = world_to_map((9,-9), self.xy_reso * self.scaling_factor, self.map_origin,self.map_shape)
         #self.goal = world_to_map((-9,-9), self.xy_reso * self.scaling_factor, self.map_origin,self.map_shape)
-        #self.goal = world_to_map((9,9), self.xy_reso * self.scaling_factor, self.map_origin,self.map_shape)
-        self.goal = world_to_map((-9,9), self.xy_reso * self.scaling_factor, self.map_origin,self.map_shape)
+        self.goal = world_to_map((9,9), self.xy_reso * self.scaling_factor, self.map_origin,self.map_shape)
+        #self.goal = world_to_map((-9,9), self.xy_reso * self.scaling_factor, self.map_origin,self.map_shape)
+        #self.goal = world_to_map((9,6), self.xy_reso * self.scaling_factor, self.map_origin,self.map_shape)
+        #self.goal = world_to_map((9,1), self.xy_reso * self.scaling_factor, self.map_origin,self.map_shape)
+        #self.goal = world_to_map((-10,-2), self.xy_reso * self.scaling_factor, self.map_origin,self.map_shape)
         
         print(self.costmap)
 
